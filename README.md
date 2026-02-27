@@ -1,1 +1,200 @@
-# spark-streaming
+```markdown
+# Spark + Kafka Streaming Demo (Docker Compose)
+
+## Architecture Diagram
+
+```
+
++-------------------------+
+|   Python Producer       |
+| (synthetic JSON events) |
++-----------+-------------+
+|
+|  publish (JSON)
+v
++-------------------------+
+|       Kafka Broker      |
+|  topic: network_events  |
+|  port: 9092             |
++-----------+-------------+
+|
+|  subscribe (stream)
+v
++-------------------------------+
+| Spark Structured Streaming     |
+| - read from Kafka             |
+| - parse JSON with schema      |
+| - micro-batch processing      |
++---------------+---------------+
+|
+|  output
+v
++-------------------------------+
+| Console Sink (demo output)     |
+| printed batches + parsed rows  |
++-------------------------------+
+
+```
+
+This project demonstrates a real-time streaming pipeline using:
+- Apache Kafka (message broker)
+- A Python producer that generates synthetic network events
+- Spark Structured Streaming (PySpark) that consumes Kafka messages, parses JSON, and prints events to the console
+
+The goal is to show a production-style streaming flow: producer -> broker -> streaming processor.
+
+## Project Structure
+
+```
+
+spark-streaming/
+docker-compose.yml
+
+producer/
+Dockerfile
+producer.py
+
+spark/
+Dockerfile
+spark_stream.py
+
+````
+
+## Requirements
+
+- Docker Desktop
+- Docker Compose (use `docker compose`)
+
+## How to Run
+
+From the project root:
+
+1. Build and start all services:
+
+```bash
+docker compose up --build
+````
+
+2. Verify services status (in a new terminal):
+
+```bash
+docker compose ps
+```
+
+3. Watch producer logs:
+
+```bash
+docker compose logs -f producer
+```
+
+Expected output (example):
+
+```
+Sent: {'timestamp': '...', 'source_ip': '...', 'destination_ip': '...', 'bytes': 4158, 'port': 80, 'protocol': 'TCP'}
+```
+
+4. Watch Spark logs:
+
+```bash
+docker compose logs -f spark
+```
+
+Expected output (example):
+
+```
+Batch: 12
++--------------------+--------------+--------------+-----+----+--------+
+|timestamp           |source_ip      |destination_ip|bytes|port|protocol|
++--------------------+--------------+--------------+-----+----+--------+
+|2026-02-27T...      |192.168...     |192.168...    |8550 |443 |UDP     |
++--------------------+--------------+--------------+-----+----+--------+
+```
+
+## Stopping the Stack
+
+Stop and remove containers:
+
+```bash
+docker compose down
+```
+
+Remove containers and volumes (clean state):
+
+```bash
+docker compose down -v
+```
+
+## Kafka Topic
+
+Topic name used by this demo:
+
+* `network_events`
+
+List topics:
+
+```bash
+docker exec -it kafka /opt/kafka/bin/kafka-topics.sh --bootstrap-server kafka:9092 --list
+```
+
+Consume a few messages directly from Kafka:
+
+```bash
+docker exec -it kafka /opt/kafka/bin/kafka-console-consumer.sh \
+  --bootstrap-server kafka:9092 \
+  --topic network_events \
+  --from-beginning \
+  --max-messages 5
+```
+
+## Spark Streaming Details
+
+### Schema (StructType)
+
+Kafka message values arrive as bytes. Spark converts them to string and parses JSON into columns using an explicit schema:
+
+* timestamp: string
+* source_ip: string
+* destination_ip: string
+* bytes: int
+* port: int
+* protocol: string
+
+### Finite demo run (optional)
+
+For a demo run that exits automatically, the streaming query can run for a fixed duration:
+
+```python
+query.awaitTermination(60)
+```
+
+For a cleaner shutdown:
+
+```python
+try:
+    query.awaitTermination(60)
+finally:
+    query.stop()
+    spark.stop()
+```
+
+## Notes on Production
+
+This project is intentionally minimal and focused on the streaming pattern.
+
+In production you typically add:
+
+* A durable sink (Parquet/Delta/S3, database, or data lake)
+* Checkpointing for stable offsets across restarts
+* Monitoring/alerting
+* Throughput tuning and backpressure handling
+* Schema evolution handling
+
+## Next Improvements (Optional)
+
+* Write to Parquet or Delta instead of console.
+* Add window aggregations (e.g., bytes per source_ip per 10 seconds).
+* Add anomaly rules (e.g., flag bytes > threshold).
+* Add checkpointLocation for stable offsets across restarts.
+
+```
+```
