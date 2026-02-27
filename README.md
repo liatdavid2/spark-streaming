@@ -178,5 +178,3 @@ In production you typically add:
 * Add anomaly rules (e.g., flag bytes > threshold).
 * Add checkpointLocation for stable offsets across restarts.
 
-```
-
