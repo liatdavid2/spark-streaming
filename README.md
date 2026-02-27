@@ -87,50 +87,149 @@ This project demonstrates a real-time streaming pipeline using:
 The goal is to show a production-style streaming flow: producer -> broker -> streaming processor.
 
 
-## How to Run
+# Running the Streaming Pipeline
 
-From the project root:
+This section explains how to build, start, and monitor the real-time network analytics pipeline using Docker Compose.
 
-1. Build and start all services:
+The system includes the following services:
 
-```bash
-docker compose up --build
-````
+- Producer container – generates network traffic events  
+- Kafka broker – handles event streaming  
+- Spark container – processes events and writes aggregated results  
 
-2. Verify services status (in a new terminal):
+---
 
-```bash
-docker compose ps
+## Step 1 — Stop existing containers
+
+Stop all running services to ensure a clean restart:
+
+```cmd
+docker compose down
 ```
 
-3. Watch producer logs:
+This command:
 
-```bash
-docker compose logs -f producer
+- Stops all containers  
+- Removes containers and networks  
+- Prevents conflicts with previous runs  
+
+---
+
+## Step 2 — Rebuild the Spark container
+
+Rebuild the Spark container without using cached layers:
+
+```cmd
+docker compose build --no-cache spark
 ```
 
-Expected output (example):
+This ensures:
 
+- Latest code changes are included  
+- The streaming application is rebuilt  
+- No outdated cached layers are used  
+
+This step is required after modifying:
+
+```text
+spark/spark_stream.py
 ```
-Sent: {'timestamp': '...', 'source_ip': '...', 'destination_ip': '...', 'bytes': 4158, 'port': 80, 'protocol': 'TCP'}
+
+---
+
+## Step 3 — Start the entire pipeline
+
+Start all services:
+
+```cmd
+docker compose up
 ```
 
-4. Watch Spark logs:
+This will start:
 
-```bash
+- Kafka broker  
+- Producer container  
+- Spark streaming container  
+
+Once running, the system will automatically:
+
+- Generate network events  
+- Stream events through Kafka  
+- Process events using Spark  
+- Store aggregated results in Parquet format  
+
+Output directory:
+
+```text
+output/
+```
+
+Checkpoint directory:
+
+```text
+checkpoints/
+```
+
+---
+
+## Monitoring the system
+
+You can monitor each component using logs.
+
+---
+
+### View Spark streaming logs
+
+```cmd
 docker compose logs -f spark
 ```
 
-Expected output (example):
+Shows:
 
+- Streaming query execution  
+- Batch processing  
+- Aggregation progress  
+- Errors (if any)  
+
+---
+
+### View Producer logs
+
+```cmd
+docker compose logs -f producer
 ```
-Batch: 12
-+--------------------+--------------+--------------+-----+----+--------+
-|timestamp           |source_ip      |destination_ip|bytes|port|protocol|
-+--------------------+--------------+--------------+-----+----+--------+
-|2026-02-27T...      |192.168...     |192.168...    |8550 |443 |UDP     |
-+--------------------+--------------+--------------+-----+----+--------+
+
+Shows generated network events being sent to Kafka.
+
+Example output:
+
+```text
+Sent event: {"timestamp":"...","source_ip":"..."}
 ```
+
+This confirms that data ingestion is working correctly.
+
+---
+
+## Stopping the system
+
+To stop all services:
+
+```cmd
+docker compose down
+```
+
+---
+
+## Successful execution
+
+The pipeline is running correctly when:
+
+- Producer logs show events being generated  
+- Spark logs show streaming batches  
+- Parquet files are created in the output directory  
+
+
 
 ## Stopping the Stack
 
