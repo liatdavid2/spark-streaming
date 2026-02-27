@@ -86,27 +86,6 @@ This project demonstrates a real-time streaming pipeline using:
 
 The goal is to show a production-style streaming flow: producer -> broker -> streaming processor.
 
-## Project Structure
-
-```
-
-spark-streaming/
-docker-compose.yml
-
-producer/
-Dockerfile
-producer.py
-
-spark/
-Dockerfile
-spark_stream.py
-
-````
-
-## Requirements
-
-- Docker Desktop
-- Docker Compose (use `docker compose`)
 
 ## How to Run
 
