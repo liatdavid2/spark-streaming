@@ -157,7 +157,6 @@ Kafka message values arrive as bytes. Spark converts them to string and parses J
 * bytes: int
 * port: int
 * protocol: string
-```
 
 ## Notes on Production
 
