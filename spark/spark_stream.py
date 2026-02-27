@@ -33,5 +33,8 @@ query = parsed.writeStream \
     .outputMode("append") \
     .start()
 
-query.awaitTermination(60)  # run for 60 seconds then exit
-spark.stop()
+try:
+    query.awaitTermination(60)
+finally:
+    query.stop()
+    spark.stop()
