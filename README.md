@@ -33,8 +33,8 @@
     │ Spark Container            │
     │ spark_stream.py            │
     │                            │
-    │ Structured Streaming      │
-    │ Processing Engine        │
+    │ Structured Streaming       │
+    │ Processing Engine          │
     └──────────────┬─────────────┘
                    ▼
 
