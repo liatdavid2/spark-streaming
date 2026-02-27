@@ -3,36 +3,80 @@
 ## Architecture Diagram
 
 ```
+                    REAL-TIME NETWORK ANALYTICS PIPELINE
+                    ────────────────────────────────────
 
-+-------------------------+
-|   Python Producer       |
-| (synthetic JSON events) |
-+-----------+-------------+
-|
-|  publish (JSON)
-v
-+-------------------------+
-|       Kafka Broker      |
-|  topic: network_events  |
-|  port: 9092             |
-+-----------+-------------+
-|
-|  subscribe (stream)
-v
-+-------------------------------+
-| Spark Structured Streaming     |
-| - read from Kafka             |
-| - parse JSON with schema      |
-| - micro-batch processing      |
-+---------------+---------------+
-|
-|  output
-v
-+-------------------------------+
-| Console Sink (demo output)     |
-| printed batches + parsed rows  |
-+-------------------------------+
+                    Docker Compose Environment
 
+
+    DATA INGESTION
+    ┌────────────────────────────┐
+    │ Producer Container         │
+    │ producer.py                │
+    │                            │
+    │ Generates network traffic  │
+    │ events                     │
+    └──────────────┬─────────────┘
+                   │ JSON events
+                   ▼
+    STREAMING PLATFORM
+    ┌────────────────────────────┐
+    │ Kafka Broker               │
+    │                            │
+    │ Topic: network_events      │
+    │ Event Streaming Platform   │
+    └──────────────┬─────────────┘
+                   │ continuous stream
+                   ▼
+    STREAM PROCESSING ENGINE
+    ┌────────────────────────────┐
+    │ Spark Container            │
+    │ spark_stream.py            │
+    │                            │
+    │ Structured Streaming      │
+    │ Processing Engine        │
+    └──────────────┬─────────────┘
+                   ▼
+
+
+    TRANSFORMATION LAYER
+    ┌────────────────────────────┐
+    │ JSON Parsing & Validation  │
+    │                            │
+    │ • Schema enforcement       │
+    │ • Timestamp conversion     │
+    │ • Structured event model   │
+    └──────────────┬─────────────┘
+                   ▼
+
+    ┌────────────────────────────┐
+    │ Window Aggregation Engine  │
+    │                            │
+    │ • 30-second windows        │
+    │ • Group by destination IP  │
+    │ • Traffic volume counting  │
+    └──────────────┬─────────────┘
+                   ▼
+    STORAGE LAYER
+    ┌────────────────────────────┐
+    │ Parquet Data Lake          │
+    │                            │
+    │ /tmp/network_agg_parquet   │
+    │                            │
+    │ Optimized analytical       │
+    │ storage format             │
+    └────────────────────────────┘
+    STATE MANAGEMENT
+    ┌────────────────────────────┐
+    │ Checkpoint Storage         │
+    │                            │
+    │ /tmp/checkpoints/          │
+    │ network_agg                │
+    │                            │
+    │ • Fault tolerance          │
+    │ • Offset tracking          │ 
+    │ • Crash recovery           │
+    └────────────────────────────┘
 ```
 
 This project demonstrates a real-time streaming pipeline using:
