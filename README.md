@@ -1,4 +1,3 @@
-```markdown
 # Spark + Kafka Streaming Demo (Docker Compose)
 
 ## Architecture Diagram
@@ -197,4 +196,4 @@ In production you typically add:
 * Add checkpointLocation for stable offsets across restarts.
 
 ```
-```
+
