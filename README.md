@@ -157,23 +157,6 @@ Kafka message values arrive as bytes. Spark converts them to string and parses J
 * bytes: int
 * port: int
 * protocol: string
-
-### Finite demo run (optional)
-
-For a demo run that exits automatically, the streaming query can run for a fixed duration:
-
-```python
-query.awaitTermination(60)
-```
-
-For a cleaner shutdown:
-
-```python
-try:
-    query.awaitTermination(60)
-finally:
-    query.stop()
-    spark.stop()
 ```
 
 ## Notes on Production
