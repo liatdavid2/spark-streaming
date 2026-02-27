@@ -220,22 +220,3 @@ Kafka message values arrive as bytes. Spark converts them to string and parses J
 * port: int
 * protocol: string
 
-## Notes on Production
-
-This project is intentionally minimal and focused on the streaming pattern.
-
-In production you typically add:
-
-* A durable sink (Parquet/Delta/S3, database, or data lake)
-* Checkpointing for stable offsets across restarts
-* Monitoring/alerting
-* Throughput tuning and backpressure handling
-* Schema evolution handling
-
-## Next Improvements (Optional)
-
-* Write to Parquet or Delta instead of console.
-* Add window aggregations (e.g., bytes per source_ip per 10 seconds).
-* Add anomaly rules (e.g., flag bytes > threshold).
-* Add checkpointLocation for stable offsets across restarts.
-
