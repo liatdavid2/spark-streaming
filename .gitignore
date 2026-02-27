@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+ENV/
+env/
+pip-wheel-metadata/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# IDE / OS
+.vscode/
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.out
+
+# Spark / Streaming artifacts
+checkpoints/
+checkpoint/
+tmp/
+spark-warehouse/
+metastore_db/
+derby.log
+
+# Kafka / Zookeeper local data (if mounted)
+kafka-data/
+zookeeper-data/
+
+# Output data (generated)
+output/
+outputs/
+data/
+*.parquet
+*.crc
+
+# Docker
+*.pid
+docker-compose.override.yml
+
+# Secrets / env
+.env
+.env.*
+!*.example

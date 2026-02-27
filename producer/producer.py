@@ -13,11 +13,12 @@ producer = None
 for i in range(60):  # up to 60 seconds
     try:
         producer = KafkaProducer(
-            bootstrap_servers="kafka:9092",
-            value_serializer=lambda v: json.dumps(v).encode(),
-            api_version_auto_timeout_ms=10000,
-            request_timeout_ms=10000,
-        )
+        bootstrap_servers="kafka:9092",
+        value_serializer=lambda v: json.dumps(v).encode(),
+        retries=5,
+        acks="all",
+        linger_ms=10,
+    )
         print("Connected to Kafka")
         break
     except NoBrokersAvailable:

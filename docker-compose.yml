@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
 
   kafka:
@@ -8,18 +10,39 @@ services:
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
-      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # listeners
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+
+      # controller quorum
       KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+
+      # required for single node
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+    restart: unless-stopped
+
 
   producer:
     build: ./producer
     depends_on:
       - kafka
+    restart: unless-stopped
+
 
   spark:
     build: ./spark
     depends_on:
       - kafka
+
+    volumes:
+
+      # parquet output → visible on Windows
+      - ./output:/tmp/network_agg_parquet
+
+      # checkpoint root → Spark creates /network_agg inside
+      - ./checkpoints:/tmp/checkpoints
+
+    restart: unless-stopped
