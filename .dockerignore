@@ -1,0 +1,31 @@
+# runtime data
+checkpoints/
+output/
+
+# secrets
+.env
+spark-key.pem
+
+# git
+.git
+.gitignore
+
+# python
+__pycache__/
+*.pyc
+*.pyo
+
+# logs
+*.log
+
+# archives
+*.zip
+*.tar.gz
+
+# local files
+Commands.txt
+aws
+icacls
+
+# system
+.DS_Store
