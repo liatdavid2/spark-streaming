@@ -53,3 +53,9 @@ docker-compose.override.yml
 .env
 .env.*
 !*.example
+aws
+Commands.txt
+deploy.tar.gz
+docker
+icacls
+spark-key.pem
